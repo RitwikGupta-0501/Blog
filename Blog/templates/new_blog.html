@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div class="container min-vh-100 d-flex justify-content-center align-items-center bg-light">
+        <div class="col-md-8">
+            <div class="row justify-content-center">
+                    {% csrf_token %}
+                    {% if message %}
+                        <h1>{{ message }}</h1>
+                    {% endif %}
+                    {% if edit %}
+                    <form method="post" action="{% url 'edit-blog' blog.id %}" class="rounded p-4 shadow-lg" style="color: dimgrey;">
+                        {% csrf_token %}
+                    	<div class="mb-2">
+                            <label for="inputTitle" class="col-form-label fw-semibold">Title</label>
+                            <input type="text" id="inputTitle" placeholder="{{ blog.title }}" value="{{ blog.title }}" maxlength="150" name="title" class="form-control" oninput="updatePreviewTitle()">
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputContent" class="col-form-label fw-semibold">Content</label>
+                            <textarea name="content" placeholder="{{ blog.content }}" id="inputContent" class="form-control" rows="5" oninput="updatePreviewContent()">{{ blog.content }}</textarea>
+                        </div>
+                        <div class="pt-2 d-flex justify-content-center">
+                            <button type="submit" class="btn btn-outline-dark">Save Changes</button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'create-blog' %}" class="rounded p-4 shadow-lg" style="color: dimgrey;">
+                        {% csrf_token %}
+                        <div class="mb-2">
+                            <label for="inputTitle" class="col-form-label fw-semibold">Title</label>
+                            <input type="text" id="inputTitle" placeholder="Title (150)" maxlength="150" name="title" class="form-control" oninput="updatePreviewTitle()">
+                        </div>
+                        <div class="mb-3">
+                            <label for="inputContent" class="col-form-label fw-semibold">Content</label>
+                            <textarea name="content" placeholder="Blog Content" id="inputContent" class="form-control" rows="5" oninput="updatePreviewContent()"></textarea>
+                        </div>
+                        <div class="pt-2 d-flex justify-content-center">
+                            <button type="submit" class="btn btn-outline-dark">Create Blog</button>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+            <div class="row justify-content-center pt-5 pb-1">
+                <div class="col-md-8">
+                    <div class="card shadow">
+                        <p class="card-header">Preview</p>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h1 class="card-title mb-2" id="previewTitle" style="max-width: 100%;">Preview Title</h1>
+                            </div>
+                            <p class="card-subtitle mb-2 text-muted">by {{ request.user }} on <span id="publish-date">{% now 'F j, Y, g:i a' %}</span></p>
+                            <hr>
+                            <p class="card-text" id="previewContent">Preview Content</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            updatePreviewTitle();
+            updatePreviewContent();
+        };
+
+        function updatePreviewTitle() {
+            var inputTitle = document.getElementById('inputTitle').value;
+            document.getElementById('previewTitle').innerText = inputTitle;
+        }
+
+        function updatePreviewContent() {
+            var inputContent = document.getElementById('inputContent').value;
+            document.getElementById('previewContent').innerText = inputContent;
+        }
+    </script>
+{% endblock %}

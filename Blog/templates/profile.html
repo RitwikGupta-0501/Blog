@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row">
+{#            <div class="col-md-3">#}
+{#                <!-- Nav Bar Column -->#}
+{#                <div class="card">#}
+{#                    <div class="card-body">#}
+{#                        Nav Bar Content#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+            <div class="col-md-9">
+                <!-- Blog Posts Table -->
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="mb-4">My Blogs</h2>
+                        {% if blogs %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Date Created</th>
+                                            <!-- Add more table headers if needed -->
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for blog in blogs %}
+                                            <tr>
+                                                <td><a href="{% url 'blog-view' blog.id %}">{{ blog.title }}</a></td>
+                                                <td>{{ blog.pub_date|date:"F d, Y" }}</td>
+                                                <!-- Adjust date format as needed -->
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p>No Blogs Created.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
