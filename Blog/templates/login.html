@@ -12,11 +12,27 @@
             </div>
             <div class="mb-3">
                 <label for="inputPassword" class="col-form-label fw-semibold">Password</label>
-                <input type="text" id="inputPassword" placeholder="Password" name="password1" class="form-control">
+                <div class="input-group mb-3">
+                    <input type="password" class="form-control" id="inputPassword" placeholder="Your Password" name="password1" aria-label="Password" aria-describedby="toggle-password">
+                    <button class="btn btn-outline-secondary input-group-append" type="button" id="toggle-password">
+                        <i class="bi bi-eye-slash"></i>
+                    </button>
+                </div>
             </div>
             <div class="pt-2 d-flex justify-content-center">
                 <button type="submit" class="btn btn-outline-dark">Login</button>
             </div>
         </form>
     </div>
+
+    <script>
+        const togglePassword = document.querySelector('#toggle-password');
+        const password = document.querySelector('#inputPassword');
+
+        togglePassword.addEventListener('click', function() {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+        });
+    </script>
 {% endblock body %}
