@@ -5,7 +5,9 @@ from Blog.models import Blog
 
 # Create your views here.
 def profile_view(request):
-    blogs = request.user.blog_set.all()
+    print("in view")
+    blogs = request.user.blog_posts.all()
+    print("Collected Blogs")
     return render(request, "profile.html", {'blogs': blogs})
 
 

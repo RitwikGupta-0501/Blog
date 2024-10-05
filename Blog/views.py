@@ -15,7 +15,7 @@ def home_view(request):
     :param request:
     :return:
     """
-    blogs = Blog.objects.all().order_by('-pub_date')
+    blogs = Blog.objects.filter(status="PB")
     if len(blogs) > 8:
         blogs = blogs[:8]
     return render(request, "index.html", {'blogs': blogs})
@@ -38,7 +38,7 @@ def register_view(request):
                     user.save()
                     login(request, user)
                     return redirect("home")
-                except django.db.IntegrityError as e:
+                except django.db.IntegrityError as _:
                     messages.error(request, "Username Already exists.")
             else:
                 messages.error(request, "Passwords do not match.")

@@ -24,4 +24,8 @@ class RestrictStaffToAdminMiddleware(object):
         return self.get_response(request)
 
 # Register your models here.
-admin.site.register(Blog)
+@admin.register(Blog)
+class BlogAdmin(admin.ModelAdmin):
+    list_display = ['title', 'slug', 'author', 'pub_date', 'status']
+    ordering = ['status', 'pub_date']
+    prepopulated_fields = {'slug': ('title',)}
