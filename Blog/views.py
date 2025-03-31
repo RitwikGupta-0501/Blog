@@ -10,7 +10,7 @@ from .models import Blog
 
 
 # Create your views here.
-def home_view(request):
+def home_view(request, *args, **kwargs):
     """
     Home Page of the Web App
 
@@ -23,8 +23,8 @@ def home_view(request):
     return render(request, "index.html", {'blogs': blogs})
 
 
-def blog_view(request, blog_id):
-    blog = get_object_or_404(Blog, pk=blog_id)
+def blog_view(request, slug, *args, **kwargs):
+    blog = get_object_or_404(Blog, slug=slug)
     if blog == Http404:
         messages.error(request, "Blog not found!")
         return redirect("home")
@@ -32,7 +32,7 @@ def blog_view(request, blog_id):
     return render(request, "blog.html", {'blog': blog})
 
 
-def create_blog(request):
+def create_blog(request, *args, **kwargs):
     """
     Handles Blog Creation.
     If POST --> Creates a blog\n
@@ -51,14 +51,14 @@ def create_blog(request):
             blog = Blog.objects.create(title=title, content=content, author=author)
             blog.save()
             messages.success(request, "Your blog has been created!")
-            return redirect("blog-view", blog_id=blog.id)
+            return redirect("blog-view", slug=blog.slug)
         else:
             messages.error(request, "You must be logged in to create a blog.")
             return redirect("login")
 
 
-def edit_blog(request, blog_id):
-    blog = get_object_or_404(Blog, pk=blog_id)
+def edit_blog(request, slug, *args, **kwargs):
+    blog = get_object_or_404(Blog, slug=slug)
     if blog == Http404:
         messages.error(request, "Blog not found!")
         return redirect("home")
@@ -69,17 +69,17 @@ def edit_blog(request, blog_id):
     elif request.method == "POST":
         if blog.author != request.user:
             messages.error(request, "You cannot edit this blog!")
-            return redirect("blog-view", blog_id=blog_id)
+            return redirect("blog-view", slug=slug)
         
         blog.title = request.POST["title"]
         blog.content = request.POST["content"]
         blog.save()
         messages.success(request, "Your blog has been updated!")
-        return redirect("blog-view", blog_id=blog_id)
+        return redirect("blog-view", slug=slug)
 
 
-def delete_blog(request, blog_id, *args, **kwargs):
-    blog = get_object_or_404(Blog, pk=blog_id)
+def delete_blog(request, slug, *args, **kwargs):
+    blog = get_object_or_404(Blog, slug=slug)
 
     if blog == Http404:
         messages.error(request, "Blog not found!")
@@ -87,7 +87,7 @@ def delete_blog(request, blog_id, *args, **kwargs):
 
     if blog.author != request.user:
         messages.error(request, "You cannot delete this blog!")
-        return redirect("blog-view", blog_id=blog_id)
+        return redirect("blog-view", slug=slug)
     
     blog.delete()
     messages.success(request, "Your blog has been deleted!")

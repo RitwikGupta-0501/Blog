@@ -9,7 +9,7 @@
                         <h1>{{ message }}</h1>
                     {% endif %}
                     {% if edit %}
-                    <form method="post" action="{% url 'edit-blog' blog.id %}" class="rounded p-4 shadow-lg" style="color: dimgrey;">
+                    <form method="post" action="{% url 'edit-blog' blog.slug %}" class="rounded p-4 shadow-lg" style="color: dimgrey;">
                         {% csrf_token %}
                     	<div class="mb-2">
                             <label for="inputTitle" class="col-form-label fw-semibold">Title</label>

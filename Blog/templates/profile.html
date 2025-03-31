@@ -30,7 +30,7 @@
                                     <tbody>
                                         {% for blog in blogs %}
                                             <tr>
-                                                <td><a href="{% url 'blog-view' blog.id %}">{{ blog.title }}</a></td>
+                                                <td><a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a></td>
                                                 <td>{{ blog.pub_date|date:"F d, Y" }}</td>
                                                 <td>{{ blog.get_status_display }}</td>
                                             </tr>

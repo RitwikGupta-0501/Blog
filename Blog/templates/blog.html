@@ -13,7 +13,7 @@
                         <p class="card-text">{{ blog.content }}</p>
                         <hr>
                         {% if blog.author == request.user %}
-                            <button class="btn btn-dark me-2" onclick="window.location.href = '{% url 'edit-blog' blog.id %}';">Edit Blog</button>
+                            <button class="btn btn-dark me-2" onclick="window.location.href = '{% url 'edit-blog' blog.slug %}';">Edit Blog</button>
                             <button class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete Blog</button>
                         {% endif %}
                     </div>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <a href="{% url 'delete-blog' blog.id %}" class="btn btn-danger">Delete</a>
+                    <a href="{% url 'delete-blog' blog.slug %}" class="btn btn-danger">Delete</a>
                 </div>
             </div>
         </div>
