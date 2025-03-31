@@ -23,6 +23,7 @@
                                         <tr>
                                             <th>Title</th>
                                             <th>Date Created</th>
+                                            <th>Status</th>
                                             <!-- Add more table headers if needed -->
                                         </tr>
                                     </thead>
@@ -31,7 +32,7 @@
                                             <tr>
                                                 <td><a href="{% url 'blog-view' blog.id %}">{{ blog.title }}</a></td>
                                                 <td>{{ blog.pub_date|date:"F d, Y" }}</td>
-                                                <!-- Adjust date format as needed -->
+                                                <td>{{ blog.get_status_display }}</td>
                                             </tr>
                                         {% endfor %}
                                     </tbody>
