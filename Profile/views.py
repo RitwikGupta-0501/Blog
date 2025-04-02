@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 
 
 # Create your views here.
+@login_required
 def profile_view(request):
     blogs = request.user.blog_posts.all()
     return render(request, "profile.html", {'blogs': blogs})
@@ -36,17 +38,6 @@ def register_view(request):
     return redirect("home")
 
 
-def authenticate_user(username:str, password:str) -> int:
-    try:
-        user = User.objects.get(username=username)
-        if user.check_password(password):
-            return 1
-        else:
-            return 0
-    except User.DoesNotExist:
-        return -1
-
-
 def login_view(request):
     """
     Handles Login of User.
@@ -60,20 +51,17 @@ def login_view(request):
         if request.method == "POST":
             username = request.POST["username"]
             password = request.POST["password1"]
-            checked = authenticate_user(username, password)
-            if checked == 1:
-                login(request, User.objects.get(username=username))
+            user = authenticate(request, username, password)
+            if user is not None:
+                login(request, user)
                 return redirect("home")
-            elif checked == 0:
-                messages.error(request, "Invalid Username or Password.")
             else:
-                messages.error(request,
-                               'User doesn\'t exist. <a class="alert-link" href="{}">Click here to create an account.</a>'.format(
-                                   reverse('register')))
+                messages.error(request, "Invalid Username or Password.")
         return render(request, "login.html")
     return redirect("home")
 
 
+@login_required
 def logout_view(request):
     """
     Handles user logout.
