@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 
 # Helper Functions
 def unauthenticated_user(view_func):
@@ -42,10 +44,15 @@ def register_view(request):
     if request.method == "POST":
         if request.POST["password1"] == request.POST["password2"]:
             try:
+                validate_password(request.POST["password1"])
                 user = User.objects.create_user(username=request.POST["username"], password=request.POST["password1"])
                 user.save()
                 login(request, user)
+                messages.success(request, "Registration successful!")
                 return redirect("home")
+            except ValidationError as e:
+                for error in e.messages:
+                    messages.error(request, error)
             except IntegrityError as _:
                 messages.error(request, "Username Already exists.")
         else:
@@ -69,6 +76,7 @@ def login_view(request):
         user = authenticate(request, username, password)
         if user is not None:
             login(request, user)
+            messages.success(request, "Login successful!")
             return redirect("home")
         else:
             messages.error(request, "Invalid Username or Password.")
