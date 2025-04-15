@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
 from .models import Blog
 
 
@@ -28,6 +29,7 @@ def blog_view(request, slug, *args, **kwargs):
     return render(request, "blog.html", {'blog': blog})
 
 
+@login_required
 def create_blog(request, *args, **kwargs):
     """
     Handles Blog Creation.
@@ -40,19 +42,16 @@ def create_blog(request, *args, **kwargs):
     if request.method == "GET":
         return render(request, "new_blog.html")
     elif request.method == "POST":
-        if request.user.is_authenticated:
-            title = request.POST["title"]
-            content = request.POST["content"]
-            author = request.user
-            blog = Blog.objects.create(title=title, content=content, author=author)
-            blog.save()
-            messages.success(request, "Your blog has been created!")
-            return redirect("blog-view", slug=blog.slug)
-        else:
-            messages.error(request, "You must be logged in to create a blog.")
-            return redirect("login")
+        title = request.POST["title"]
+        content = request.POST["content"]
+        author = request.user
+        blog = Blog.objects.create(title=title, content=content, author=author)
+        blog.save()
+        messages.success(request, "Your blog has been created!")
+        return redirect("blog-view", slug=blog.slug)
 
 
+@login_required
 def edit_blog(request, slug, *args, **kwargs):
     blog = get_object_or_404(Blog, slug=slug)
     if blog == Http404:
@@ -74,6 +73,7 @@ def edit_blog(request, slug, *args, **kwargs):
         return redirect("blog-view", slug=slug)
 
 
+@login_required
 def delete_blog(request, slug, *args, **kwargs):
     blog = get_object_or_404(Blog, slug=slug)
 
