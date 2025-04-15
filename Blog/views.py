@@ -1,8 +1,9 @@
-from django.contrib import messages
-from django.shortcuts import render, redirect
 from django.http import Http404
+from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage
 from .models import Blog
 
 
@@ -14,18 +15,20 @@ def home_view(request, *args, **kwargs):
     :param request:
     :return:
     """
-    blogs = Blog.objects.filter(status="PB")
-    if len(blogs) > 8:
-        blogs = blogs[:8]
-    return render(request, "index.html", {'blogs': blogs})
+    blogs = Blog.objects.filter(status="PB").only("title", "pub_date", "author", "slug")
+    pages = Paginator(blogs, 10)
+    page_number = request.GET.get('page', 1)
+    try:
+        page = pages.get_page(page_number)
+    except EmptyPage:
+        messages.error(request, "The requested page does not exist!")
+        return redirect("?page=1/")
+    
+    return render(request, "index.html", {'blogs': page, "last_page": pages.count})
 
 
 def blog_view(request, slug, *args, **kwargs):
-    blog = get_object_or_404(Blog, slug=slug)
-    if blog == Http404:
-        messages.error(request, "Blog not found!")
-        return redirect("home")
-    
+    blog = get_object_or_404(Blog, slug=slug)    
     return render(request, "blog.html", {'blog': blog})
 
 
@@ -54,9 +57,6 @@ def create_blog(request, *args, **kwargs):
 @login_required
 def edit_blog(request, slug, *args, **kwargs):
     blog = get_object_or_404(Blog, slug=slug)
-    if blog == Http404:
-        messages.error(request, "Blog not found!")
-        return redirect("home")
 
     # To create a blog = GET, to edit a blog = POST
     if request.method == "GET":
@@ -76,10 +76,6 @@ def edit_blog(request, slug, *args, **kwargs):
 @login_required
 def delete_blog(request, slug, *args, **kwargs):
     blog = get_object_or_404(Blog, slug=slug)
-
-    if blog == Http404:
-        messages.error(request, "Blog not found!")
-        return redirect("home")
 
     if blog.author != request.user:
         messages.error(request, "You cannot delete this blog!")
