@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
+from django.core.paginator import Paginator, EmptyPage
+
 
 # Helper Functions
 def unauthenticated_user(view_func):
@@ -25,6 +27,8 @@ def unauthenticated_user(view_func):
 
 
 # Django Views
+
+# TODO - Implement Pagination
 @login_required
 def profile_view(request):
     blogs = request.user.blog_posts.all()

@@ -15,16 +15,27 @@ def home_view(request, *args, **kwargs):
     :param request:
     :return:
     """
-    blogs = Blog.objects.filter(status="PB").only("title", "pub_date", "author", "slug")
-    pages = Paginator(blogs, 10)
     page_number = request.GET.get('page', 1)
+    try:
+        page_number = int(page_number)
+        if page_numebr < 1:
+            page_number = 1
+    except ValueError:
+        page_number = 1
+    
+    blogs = Blog.objects.filter(status=Blog.Status.PUBLISHED).select_related("author")
+    
+    pages = Paginator(blogs, 10)
     try:
         page = pages.get_page(page_number)
     except EmptyPage:
-        messages.error(request, "The requested page does not exist!")
-        return redirect("?page=1/")
+        page = pages.get_page(pages.count)
     
-    return render(request, "index.html", {'blogs': page, "last_page": pages.count})
+    context = {
+        'blogs': page,
+        'last_page': pages.count
+    }
+    return render(request, "index.html",context=context)
 
 
 def blog_view(request, slug, *args, **kwargs):
