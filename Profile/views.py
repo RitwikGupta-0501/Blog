@@ -31,8 +31,28 @@ def unauthenticated_user(view_func):
 # TODO - Implement Pagination
 @login_required
 def profile_view(request):
+    page_number = request.GET.get('page', 1)
+    try:
+        page_number = int(page_number)
+        if page_number < 1:
+            page_number = 1
+    except ValueError:
+        page_number = 1
+    
     blogs = request.user.blog_posts.all()
-    return render(request, "profile.html", {'blogs': blogs})
+
+    pages = Paginator(blogs, 10)
+
+    try:
+        page = pages.get_page(page_number)
+    except EmptyPage:
+        page = pages.get_page(pages.count)
+    
+    context = {
+        'blogs': page,
+        'last_page': pages.count
+    }
+    return render(request, "profile.html", context=context)
 
 
 @unauthenticated_user
